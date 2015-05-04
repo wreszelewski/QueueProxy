@@ -23,7 +23,6 @@ class ClientHandler(tornado.web.RequestHandler):
         self.queue_name = queue.method.queue
 
         req_uuid = str(uuid.uuid4())
-        print(req_uuid)
         storage_path = os.path.join("/storage", 'req', req_uuid)
         with open(storage_path, "wb") as req_content:
             req_content.write(self.request.body)
