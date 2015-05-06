@@ -24,7 +24,7 @@ class Dispatcher(object):
         self.channel = channel
         self.channel.exchange_declare(exchange="request", type='direct')
         self.channel.exchange_declare(exchange="response", type='direct')
-        self.channel.queue_declare(self.process_request, exclusive=True)
+        self.channel.queue_declare(self.process_request, queue=self.backend, auto_delete=True)
 
     def process_request(self, queue):
         self.queue_name = queue.method.queue
