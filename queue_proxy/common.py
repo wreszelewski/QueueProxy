@@ -21,7 +21,7 @@ class PikaClient(object):
 
         self.connecting = True
 
-        param = pika.ConnectionParameters(host='localhost')
+        param = pika.ConnectionParameters(host='internal-Infrastructure-673672297.eu-west-1.elb.amazonaws.com')
         self.connection = pika.TornadoConnection(param,
                                             on_open_callback=self.on_connected)
         self.connection.add_on_close_callback(self.on_closed)
