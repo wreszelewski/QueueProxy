@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from queue_proxy.common import PikaClient
 import tornado.ioloop
 import tornado.web

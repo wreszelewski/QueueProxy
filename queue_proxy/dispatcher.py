@@ -7,10 +7,20 @@ from boto.s3.key import Key
 import time
 from functools import partial
 from queue_proxy.config import Config
+import sys
+import signal
 
 class Dispatcher(object):
 
+    def term_handler(self, arg1, arg2):
+
+        if self.stopped:
+            sys.exit()
+            
+
     def __init__(self, rabbit_client, backend):
+        self.stopped = True
+        signal.signal(signal.SIGTERM, self.term_handler)       
         self.config = Config()
         client = S3Connection(self.config['aws_access_key_id'],
                               self.config['aws_secret_access_key'])
@@ -41,6 +51,7 @@ class Dispatcher(object):
 
     
     def resp(self, ch, method, properties, body):
+        self.stopped = False
         req_id = json.loads(body.decode('utf-8'))['id']
         path = os.path.join('/storage', 'req', req_id)
         key = Key(self.bucket)
@@ -65,3 +76,4 @@ class Dispatcher(object):
                               routing_key=req_id,
                               body=message)
         ch.basic_ack(delivery_tag=method.delivery_tag)
+        self.stopped = True
