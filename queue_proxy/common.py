@@ -21,7 +21,7 @@ class PikaClient(object):
 
         self.connecting = True
 
-        param = pika.ConnectionParameters(host='internal-Infrastructure-673672297.eu-west-1.elb.amazonaws.com')
+        param = pika.ConnectionParameters(host='internal-Infrastructure-673672297.eu-west-1.elb.amazonaws.com', heartbeat_interval=30)
         self.connection = pika.TornadoConnection(param,
                                             on_open_callback=self.on_connected)
         self.connection.add_on_close_callback(self.on_closed)
@@ -38,6 +38,6 @@ class PikaClient(object):
 
         self.channel = channel
 
-    def on_closed(self, connection):
+    def on_closed(self, connection, arg1, arg2):
 
         self.io_loop.stop()
