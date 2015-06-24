@@ -50,14 +50,24 @@ class ClientHandler(tornado.web.RequestHandler):
         self.channel = channel
         self.channel.exchange_declare(exchange="request", type='direct')
         self.channel.exchange_declare(exchange="response", type='direct')
-        self.channel.queue_declare(self.process_request, exclusive=True)
+        self.channel.queue_declare(self.second_declare, exclusive=True)
 
     @tornado.web.asynchronous
     def post(self):
+        print("Request")
         self.rabbit_client.connection.channel(self.prepare_exchanges)
 
-    def process_request(self, queue):
+    def second_declare(self, queue):
         self.queue_name = queue.method.queue
+        self.channel.queue_declare(self.queue_bind, queue=self.request.host, auto_delete=True)
+
+    def queue_bind(self, queue):
+        self.channel.queue_bind(self.process_request, exchange='request',
+                           queue=self.request.host,
+                           routing_key=self.request.host)
+        
+
+    def process_request(self, arg):
 
         self.req_uuid = str(uuid.uuid4())
         storage_path = os.path.join("/storage", 'req', self.req_uuid)
