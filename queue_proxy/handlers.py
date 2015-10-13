@@ -101,4 +101,5 @@ class ClientHandler(tornado.web.RequestHandler):
 
     def complete_request(self, response):
         self.write(response)
+        self.add_header('Connection', 'close')
         self.finish()
